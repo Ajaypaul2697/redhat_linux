@@ -1,0 +1,164 @@
+Mounting an ISO Image 
+ 
+An ISO image (or a disk image in general) can be mounted by using the loop device. Assuming that the ISO image of the Fedora 14 installation disc is present in the current working directory and that the /media/cdrom/directory exists, you can mount the image to this directory by running the following command as root: 
+ 
+ 
+ 
+mount -o ro,loop Fedora-14-x86_64-Live-Desktop.iso /media/cdrom 
+ 
+ 
+Creating a Shared Mount Point 
+ 
+There are two places where other file systems are commonly mounted: the /media directory for removable media, and the /mnt directory for temporarily mounted file systems. By using a shared mount, you can make these two directories share the same content. To do so, as root, mark the /media directory as “shared”: 
+ 
+mount --bind /media /media 
+ 
+mount --make-shared /media 
+ 
+Then create its duplicate in /mnt by using the following command: 
+ 
+mount --bind /media /mnt 
+ 
+mount /dev/cdrom /media/cdrom 
+ 
+ls /media/cdrom 
+ 
+ls /mnt/cdrom 
+ 
+ 
+Slave Mount 
+ 
+mount --bind /media /media 
+ 
+mount --make-shared /media 
+ 
+Then create its duplicate in /mnt, but mark it as “slave”: 
+ 
+ 
+mount --bind /media /mnt 
+ 
+ 
+mount --make-slave /mnt 
+ 
+mount /dev/cdrom /media/cdrom 
+ 
+ls /media/cdrom 
+ 
+ls /mnt/cdrom 
+ 
+mount /dev/sdc1 /mnt/flashdisk 
+ 
+ls /media/flashdisk 
+ 
+ls /mnt/flashdisk 
+ 
+ 
+Creating a Private Mount Point 
+ 
+mount --bind /media /media 
+ 
+mount --make-shared /media 
+ 
+mount --bind /media /mnt 
+ 
+To mark the /mnt directory as “private”, type: 
+ 
+mount --make-private /mnt 
+ 
+mount /dev/cdrom /media/cdrom 
+ 
+ls /media/cdrom 
+ 
+ls /mnt/cdrom 
+mount /dev/sdc1 /mnt/flashdisk 
+ 
+ 
+ls /media/flashdisk 
+ 
+ls /mnt/flashdisk 
+
+
+Moving an Existing NFS Mount Point 
+ 
+Imagine that you have an NFS storage that contains user directories. Assuming that this storage is already mounted in /mnt/userdirs/, as root, you can move this mount point to /home by using the following command: 
+ 
+ 
+mount --move /mnt/userdirs /home 
+ 
+To verify the mount point has been moved, list the content of both directories: 
+ 
+ 
+ls /mnt/userdirs 
+ 
+ 
+ls /home 
+ 
+ 
+Unmounting a File System 
+ 
+ 
+umount directory 
+ 
+ 
+When a file system is in use (for example, when a process is reading a file on this file system), running the umount command will fail with an error. To determine which processes are accessing the file system, use the fuser command in the following form: 
+ 
+fuser -m directory 
+ 
+Unmounting a CD 
+ 
+umount /media/cdrom 
+ 
+ 
+ 
+The ext3 File System 
+ 
+ 
+Features of ext3 
+ 
+Availability 
+Data Integrity 
+Speed 
+Easy Transition 
+ 
+ 
+Creating an ext3 File System 
+ 
+The steps for creating an ext3 file system are as follows: 
+ 
+Format the partition with the ext3 file system using mkfs. 
+ 
+Label the partition using e2label. 
+ 
+tune2fs -j <block_device> 
+ 
+/dev/mapper/VolGroup00-LogVol02 
+ 
+Reverting to an ext2 File System 
+ 
+ 
+umount /dev/mapper/VolGroup00-LogVol02 
+ 
+tune2fs -O ^has_journal /dev/mapper/VolGroup00-LogVol02 
+ 
+Check the partition for errors by typing the following command as root: 
+ 
+ 
+e2fsck -y /dev/mapper/VolGroup00-LogVol02 
+ 
+Then mount the partition again as ext2 file system by typing: 
+ 
+mount -t ext2 /dev/mapper/VolGroup00-LogVol02 /mount/point 
+ 
+rm -f .journal 
+ 
+The ext4 File System 
+ 
+ 
+Features of ext4 
+ 
+The ext4 file system is a scalable extension of the ext3 file system, which is the default file system of Red Hat Enterprise Linux 5. The ext4 file system can support files and file systems of up to 16 terabytes in size. It also supports an unlimited number of sub-directories (the ext3 file system only supports up to 32,000), though once the link count exceeds 65,000 it resets to 1 and is no longer increased. The following are the most important features of ext4: 
+ 
+Managing an ext4 File System 
+ 
+ 
+yum install e4fsprogs 
