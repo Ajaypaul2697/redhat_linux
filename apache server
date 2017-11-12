@@ -1,0 +1,220 @@
+Name based 
+yum  install -y  httpd 
+  
+Vim /etc/hosts 
+  
+192.168.56.103    www.example1.com 
+192.168.56.103    www.example2.com 
+  
+  
+Vim /etc/httpd/conf/httpd.conf 
+  
+Listen 80 
+NameVirtualHost 192.168.56.103:80 
+  
+<VirtualHost 192.168.56.103:80> 
+    ServerAdmin webmaster@example1.com 
+    DocumentRoot /var/www/html/example1.com 
+    ServerName www.example1.com 
+    ErrorLog logs/www.example1.com-error_log 
+    CustomLog logs/www.example1.com-access_log common 
+</VirtualHost> 
+  
+<VirtualHost 192.168.56.103:80> 
+    ServerAdmin webmaster@example2.com 
+    DocumentRoot /var/www/html/example2.com 
+    ServerName www.example2.com 
+    ErrorLog logs/www.example2.com-error_log 
+    CustomLog logs/www.example2.com-access_log common 
+</VirtualHost> 
+  
+/var/www/html/example1.com/index.html 
+  
+<html> 
+  <head> 
+    <title>www.example1.com</title> 
+  </head> 
+  <body> 
+    <h1>Hello, Welcome to www.example1.com.</h1> 
+  </body> 
+</html> 
+  
+  
+/var/www/html/example2.com/index.html 
+  
+<html> 
+  <head> 
+    <title>www.example2.com</title> 
+  </head> 
+  <body> 
+    <h1>Hello, Welcome to www.example2.com.</h1> 
+  </body> 
+</html> 
+  
+chkconfig --level 35 httpd on 
+ service httpd restart 
+  
+  
+ Ip based  
+ 
+Create   vip  
+  
+All  are  same  
+  
+Listen 192.168.56.103:80 
+  
+  
+<VirtualHost 192.168.56.103:80> 
+    ServerAdmin webmaster@example1.com 
+    DocumentRoot /var/www/html/example1.com 
+    ServerName www.example1.com 
+    ErrorLog logs/www.example1.com-error_log 
+    CustomLog logs/www.example1.com-access_log common 
+</VirtualHost> 
+  
+<VirtualHost 192.168.56.105:80> 
+    ServerAdmin webmaster@example2.com 
+    DocumentRoot /var/www/html/example2.com 
+    ServerName www.example2.com 
+    ErrorLog logs/www.example2.com-error_log 
+    CustomLog logs/www.example2.com-access_log common 
+</VirtualHost> 
+  
+  
+Service  httpd   restart  
+  
+  
+ ps -ef | grep -Ei '(apache|httpd)' | grep -v grep 
+  
+  
+Configuring Apache 
+/etc/httpd/conf/httpd.conf 
+  
+Serving Pages in a Standalone Server with Apache 
+The most basic usage of Apache is to serve web pages in a standalone server where no virtual hosts have been configured yet. 
+The DocumentRoot directive specifies the directory out of which Apache will serve web pages documents. 
+
+Note that by default, all requests are taken from this directory, but you can also use symbolic links and / or aliases
+may be used to point to other locations as well. 
+
+Unless matched by the Alias directive (which allows documents to be stored in the local filesystem instead of 
+under the directory specified by DocumentRoot), the server appends the path from the requested URL to the
+document root to make the path to the document. 
+For example, given the following DocumentRoot: 
+Image download failed.
+
+Apache DocumentRoot 
+When the web browser points to [Server IP or hostname]/lfce/tecmint.html, the server will open/var/www/html/lfce/tecmint.html 
+(assuming that such file exists) and save the event to its access log with a 200 (OK) response. 
+The access log is typically found inside /var/log under a representative name, such as access.log oraccess_log. 
+You may even find this log (and the error log as well) inside a subdirectory (for example,/var/log/httpd in CentOS). Otherwise, the failed event will still be logged to the access log but with a404 (Not Found) response. 
+Image download failed.
+
+Apache Access Log 
+In addition, the failed events will be recorded in the error log: 
+Image download failed.
+
+Apache Error Log 
+The format of the access log can be customized according to your needs using the LogFormat directive in the main configuration file, whereas you cannot do the same with the error log. 
+The default format of the access log is as follows: 
+LogFormat "%h %l %u %t \"%r\" %>s %b" [nickname] 
+Where each of the letters preceded by a percent sign indicates the server to log a certain piece of information: 
+
+String 
+Description 
+ %h 
+ Remote hostname or IP address 
+ %l 
+ Remote log name 
+ %u 
+ Remote user if the request is authenticated 
+ %t 
+ Date and time when the request was received 
+ %r 
+ First line of request to the server 
+ %>s 
+ Final status of the request 
+ %b 
+ Size of the response [bytes] 
+  
+Setting Up Name-Based Virtual Hosts 
+In order for pages to be displayed correctly, we will chmod each VirtualHost’s directory to 755: 
+# chmod -R 755 /var/www/html/ilovelinux.com/public_html 
+# chmod -R 755 /var/www/html/linuxrocks.org/public_html 
+  
+  
+<html> 
+   <head> 
+     <title>www.ilovelinux.com</title> 
+   </head> 
+   <body> 
+     <h1>This is the main page of www.ilovelinux.com</h1> 
+   </body> 
+</html> 
+  
+  
+<VirtualHost *:80> 
+      ServerAdmin admin@ilovelinux.com  
+     DocumentRoot /var/www/html/ilovelinux.com/public_html 
+      ServerName www.ilovelinux.com 
+      ServerAlias www.ilovelinux.com ilovelinux.com 
+      ErrorLog /var/www/html/ilovelinux.com/error.log 
+      LogFormat "%v %l %u %t \"%r\" %>s %b" myvhost 
+      CustomLog /var/www/html/ilovelinux.com/access.log        myvhost 
+</VirtualHost> 
+<VirtualHost *:80> 
+      ServerAdmin admin@linuxrocks.org  
+     DocumentRoot /var/www/html/linuxrocks.org/public_html 
+      ServerName www.linuxrocks.org 
+      ServerAlias www.linuxrocks.org linuxrocks.org 
+      ErrorLog /var/www/html/linuxrocks.org/error.log 
+      LogFormat "%v %l %u %t \"%r\" %>s %b" myvhost 
+      CustomLog /var/www/html/linuxrocks.org/access.log        myvhost 
+</VirtualHost> 
+  
+  
+Please note that you can also add each virtual host definition in separate files inside the/etc/httpd/conf.d directory. If you choose to do so, each configuration file must be named as follows: 
+/etc/httpd/conf.d/ilovelinux.com.conf 
+/etc/httpd/conf.d/linuxrocks.org.conf 
+  
+  
+Installing and Configuring SSL with Apache 
+yum update && yum install mod_ssl                 [On CentOS] 
+  
+mkdir /etc/httpd/ssl-certs 
+  
+ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/httpd/ssl-certs/apache.key -out /etc/httpd/ssl-certs/apache.crt 
+  
+  
+  
+A brief explanation of the options listed above: 
+req -X509 indicates we are creating a x509 certificate. 
+-nodes (NO DES) means “don’t encrypt the key”. 
+-days 365 is the number of days the certificate will be valid for. 
+-newkey rsa:2048 creates a 2048-bit RSA key. 
+-keyout /etc/httpd/ssl-certs/apache.key is the absolute path of the RSA key. 
+-out /etc/httpd/ssl-certs/apache.crt is the absolute path of the certificate. 
+  
+  
+Step 3: Open your chosen virtual host configuration file 
+(or its corresponding section in/etc/httpd/conf/httpd.conf as explained earlier)
+and add the following lines to a virtual host declaration listening on port 443. 
+
+
+SSLEngine on 
+SSLCertificateFile /etc/httpd/ssl-certs/apache.crt 
+SSLCertificateKeyFile /etc/httpd/ssl-certs/apache.key 
+Please note that you need to add. 
+NameVirtualHost *:443 
+at the top, right below 
+NameVirtualHost *:80 
+Both directives instruct apache to listen on ports 443 and 80 of all network interfaces. 
+The following example is taken from /etc/httpd/conf/httpd.conf: 
+  
+Then restart Apache, 
+  
+
+ 
+ Then restart Apache, 
+ 
+ 
