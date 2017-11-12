@@ -1,0 +1,207 @@
+1.Daemon Options 
+  
+listen — When enabled, vsftpd runs in stand-alone mode. 
+  
+listen_ipv6 — When enabled, vsftpd runs in stand-alone mode, but listens only to IPv6 sockets. 
+  
+session_support — When enabled, vsftpd attempts to maintain login sessions for each user through Pluggable Authentication Modules (PAM). 
+  
+2.Log In Options and Access Controls 
+  
+nonymous_enable — When enabled, anonymous users are allowed to log in 
+  
+banned_email_file — If the deny_email_enable directive is set to YES, this directive specifies the file containing a list of anonymous email passwords which are not permitted access to the server. 
+The default value is /etc/vsftpd.banned_emails. 
+  
+banner_file — Specifies the file containing text displayed when a connection is established to the server.  
+  
+cmds_allowed — Specifies a comma-delimited list of FTP commands allowed by the server. 
+  
+deny_email_enable — When enabled, any anonymous user utilizing email passwords specified in the/etc/vsftpd.banned_emails are denied access to the server 
+  
+ftpd_banner — When enabled, the string specified within this directive is displayed when a connection is established to the server 
+  
+local_enable — When enabled, local users are allowed to log into the system. 
+  
+userlist_deny — When used in conjunction with the userlist_enable directive and set to NO, all local users are denied access unless the username is listed in the file specified by the userlist_file directive.  
+  
+userlist_enable — When enabled, the users listed in the file specified by the userlist_file directive are denied access. 
+  
+userlist_file — Specifies the file referenced by vsftpd when the userlist_enable directive is enabled. 
+  
+cmds_allowed — Specifies a comma separated list of FTP commands that the server allows. Any other commands are rejected 
+  
+ Anonymous User Options 
+  
+anonymous_enable 
+  
+anon_mkdir_write_enable — When enabled in conjunction with the write_enable directive, anonymous users are allowed to create new directories within a parent directory which has write permissions. 
+  
+anon_root — Specifies the directory vsftpd changes to after an anonymous user logs in. 
+  
+anon_upload_enable — When enabled in conjunction with the write_enable directive, anonymous users are allowed to upload files within a parent directory which has write permissions. 
+  
+anon_world_readable_only — When enabled, anonymous users are only allowed to download world-readable files. 
+  
+secure_email_list_enable — When enabled, only a specified list of email passwords for anonymous logins are accepted 
+  
+Local User Options 
+  
+chmod_enable — When enabled, the FTP command SITE CHMOD is allowed for local users 
+chroot_list_enable — When enabled, the local users listed in the file specified in the chroot_list_filedirective are placed in a chroot jail upon log in. 
+  
+chroot_list_file — Specifies the file containing a list of local users referenced when thechroot_list_enable directive is set to YES. 
+  
+chroot_local_user — When enabled, local users are change-rooted to their home directories after logging in. 
+  
+guest_enable — When enabled, all non-anonymous users are logged in as the user guest, which is the local user specified in the guest_username directive. 
+  
+passwd_chroot_enable — When enabled in conjunction with the chroot_local_user directive, vsftpdchange-roots local users based on the occurrence of the /./ in the home directory field within/etc/passwd. 
+  
+user_config_dir — Specifies the path to a directory containing configuration files bearing the name of local system users that contain specific setting for that user 
+  
+Directory Options 
+dirlist_enable — When enabled, users are allowed to view directory lists. 
+  
+dirmessage_enable — When enabled, a message is displayed whenever a user enters a directory with a message file 
+  
+force_dot_files — When enabled, files beginning with a dot (.) are listed in directory listings, with the exception of the . and .. files. 
+  
+use_localtime — When enabled, directory listings reveal the local time for the computer instead of GMT. 
+  
+File Transfer Options 
+download_enable — When enabled, file downloads are permitted. 
+  
+chown_uploads — When enabled, all files uploaded by anonymous users are owned by the user specified in the chown_username directive 
+  
+chown_username — Specifies the ownership of anonymously uploaded files if the chown_uploads directive is enabled. 
+  
+write_enable — When enabled, FTP commands which can change the file system are allowed, such asDELE, RNFR, and STOR. 
+  
+Logging Options 
+dual_log_enable — When enabled in conjunction with xferlog_enable, vsftpd writes two files simultaneously: a wu-ftpd-compatible log to the file specified in the xferlog_file directive (/var/log/xferlog by default) and a standard vsftpd log file specified in the vsftpd_log_file directive (/var/log/vsftpd.log by default). 
+  
+log_ftp_protocol — When enabled in conjunction with xferlog_enable and with xferlog_std_format set to NO, all FTP commands and responses are logged 
+  
+syslog_enable — When enabled in conjunction with xferlog_enable, all logging normally written to the standard vsftpd log file specified in the vsftpd_log_file directive (/var/log/vsftpd.log by default) is sent to the system logger instead under the FTPD facility. 
+  
+vsftpd_log_file — Specifies the vsftpd log file. For this file to be used, xferlog_enable must be enabled and xferlog_std_format must either be set to NO or, if xferlog_std_format is set to YES, dual_log_enablemust be enabled 
+  
+xferlog_enable — When enabled, vsftpd logs connections (vsftpd format only) and file transfer information to the log file specified in the vsftpd_log_file directive (/var/log/vsftpd.log by default). Ifxferlog_std_format is set to YES, file transfer information is logged but connections are not, and the log file specified in xferlog_file (/var/log/xferlog by default) is used instead. It is important to note that both log files and log formats are used if dual_log_enable is set to YES. 
+  
+xferlog_file — Specifies the wu-ftpd-compatible log file. For this file to be used, xferlog_enable must be enabled and xferlog_std_format must be set to YES. It is also used if dual_log_enable is set to YES. 
+  
+xferlog_std_format — When enabled in conjunction with xferlog_enable, only a wu-ftpd-compatible file transfer log is written to the file specified in the xferlog_file directive (/var/log/xferlog by default). It is important to note that this file only logs file transfers and does not log connections to the server. 
+  
+Network Options 
+  
+accept_timeout — Specifies the amount of time for a client using passive mode to establish a connection. 
+The default value is 60. 
+  
+anon_max_rate — Specifies the maximum data transfer rate for anonymous users in bytes per second. 
+The default value is 0, which does not limit the transfer rate. 
+  
+connect_from_port_20 When enabled, vsftpd runs with enough privileges to open port 20 on the server during active mode data transfers 
+  
+connect_timeout — Specifies the maximum amount of time a client using active mode has to respond to a data connection, in seconds. 
+The default value is 60. 
+  
+data_connection_timeout — Specifies maximum amount of time data transfers are allowed to stall, in seconds. Once triggered, the connection to the remote client is closed. 
+The default value is 300. 
+  
+ftp_data_port — Specifies the port used for active data connections when connect_from_port_20 is set toYES. 
+The default value is 20. 
+  
+idle_session_timeout — Specifies the maximum amount of time between commands from a remote client. Once triggered, the connection to the remote client is closed. 
+  
+The default value is 300. 
+  
+listen_address — Specifies the IP address on which vsftpd listens for network connections. 
+local_max_rate — Specifies the maximum rate data is transferred for local users logged into the server in bytes per second. 
+  
+The default value is 0, which does not limit the transfer rate. 
+  
+max_clients — Specifies the maximum number of simultaneous clients allowed to connect to the server when it is running in standalone mode. Any additional client connections would result in an error message. 
+The default value is 0, which does not limit connections. 
+  
+max_per_ip — Specifies the maximum of clients allowed to connected from the same source IP address. 
+  
+pasv_enable — When enabled, passive mode connects are allowed. 
+The default value is YES. 
+  
+ 
+ 
+# Allow anonymous FTP? 
+ 
+anonymous_enable=NO 
+# 
+# Allow local users to log in? 
+local_enable=YES 
+# 
+# Allow any form of FTP write command. 
+write_enable=YES 
+# 
+# To make files uploaded by your users writable by only 
+# themselves, but readable by everyone and if, through some 
+# misconfiguration, an anonymous user manages to upload a file, # the file will have no read, write or execute permission. Just to be # safe.  
+local_umask=0000 
+file_open_mode=0644 
+anon_umask=0777 
+# 
+# Allow the anonymous FTP user to upload files? 
+anon_upload_enable=NO 
+# 
+# Activate directory messages - messages given to remote users when they 
+# go into a certain directory. 
+dirmessage_enable=NO 
+# 
+# Activate logging of uploads/downloads? 
+xferlog_enable=YES 
+# 
+# Make sure PORT transfer connections originate from port 20 (ftp-data)? 
+connect_from_port_20=YES 
+# 
+# Log file in standard ftpd xferlog format? 
+xferlog_std_format=NO 
+# 
+# User for vsftpd to run as? 
+nopriv_user=vsftpd 
+# 
+# Login banner string: 
+ftpd_banner= NOTICE TO USERS - Use of this system constitutes consent to security monitoring and testing. All activity is logged with your host name and IP address. 
+# 
+# chroot local users (only allow users to see their directory)? 
+chroot_local_user=YES 
+# 
+# PAM service name? 
+pam_service_name=vsftpd 
+# 
+# Enable user_list (see next option)? 
+userlist_enable=YES 
+# 
+# Should the user_list file specify users to deny(=YES) or to allow(=NO) 
+userlist_deny=NO 
+# 
+# Standalone (not run through xinetd) listen mode? 
+listen=YES 
+# 
+# 
+tcp_wrappers=NO 
+# 
+# Log all ftp actions (not just transfers)? 
+log_ftp_protocol=YES 
+# Initially YES for trouble shooting, later change to NO 
+# 
+# Show file ownership as ftp:ftp instead of real users? 
+hide_ids=YES 
+# 
+# Allow ftp users to change permissions of files? 
+chmod_enable=NO 
+# 
+# Use local time? 
+use_localtime=YES 
+# 
+# List of raw FTP commands, which are allowed (some commands may be a security hazard): 
+cmds_allowed=ABOR,QUIT,LIST,PASV,RETR,CWD,STOR,TYPE,PWD,SIZE,NLST,PORT,SYST,PRET,MDTM,DEL,MKD,RMD 
+ 
+ 
