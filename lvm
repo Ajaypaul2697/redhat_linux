@@ -1,0 +1,272 @@
+Logical volumes provide the following advantages over using physical storage directly 
+======================================================================= 
+  
+1.Flexible capacity 
+  
+2.Resizeable storage pools 
+  
+3.Online data relocation 
+  
+4.Convenient device naming  
+  
+5.Disk striping  
+  
+6.Mirroring volumes 
+  
+7.Volume Snapshots 
+  
+  
+  
+Scanning for Block Devices 
+--------------------------------- 
+lvmdiskscan  
+  
+pvscan 
+The pvscan command scans all supported LVM block devices in the system for physical volumes. 
+  
+Preventing Allocation on a Physical Volume 
+-------------------------------------------------------- 
+  
+pvchange -x n /dev/sdk1  
+  
+pvchange -x y  /dev/sdk1  -----to allow  
+  
+Resizing a Physical Volume 
+---------------------------------- 
+Pvresize 
+  
+Removing Physical Volumes 
+------------------------------------- 
+pvremove /dev/ram15 
+  
+Volume Group Administration 
+---------------------------------------- 
+  
+vgcreate vg1 /dev/sdd1 /dev/sde1 
+  
+  
+Adding Physical Volumes to a Volume Group 
+--------------------------------------------------------- 
+vgextend vg1 /dev/sdf1  
+  
+Displaying Volume Groups  
+--------------------------------- 
+  
+vgdisplay new_vg 
+  
+Scanning Disks for Volume Groups to Build the Cache File 
+------------------------------------------------------------------------- 
+Vgscan 
+-- 
+  
+Removing Physical Volumes from a Volume Group 
+----------------------------------------------------------- 
+  
+pvdisplay /dev/hda1  
+If the physical volume is still being used you will have to migrate the data to another physical volume using the pvmove command. Then use the vgreduce command to remove the physical volume:  
+  
+pvmove 
+  
+vgreduce my_volume_group /dev/hda1  
+  
+  
+Changing the Parameters of a Volume Group  
+---------------------------------------------------------- 
+  
+The vgchange command is used to deactivate and activate volume groups 
+  
+vgchange -l 128 /dev/vg00  
+  
+Activating and Deactivating Volume Groups  
+--------------------------------------------------------- 
+  
+vgchange -a n my_volume_group  
+  
+Lvchange 
+  
+Removing Volume Groups 
+------------------------------------ 
+  
+vgremove officevg 
+  
+Splitting a Volume Group 
+--------------------------------- 
+vgsplit  
+  
+# vgsplit bigvg smallvg /dev/ram15  
+Volume group "smallvg" successfully split from "bigvg"  
+  
+Combining Volume Groups 
+---------------------------------- 
+  
+Vgmerge 
+  
+vgmerge -v databases my_vg  
+  
+Backing Up Volume Group Metadata 
+------------------------------------------------ 
+  
+/etc/lvm/backup 
+/etc/lvm/archives 
+  
+The vgcfrestore command restores the metadata of a volume group from the archive to all the physical volumes in the volume groups. 
+  
+Renaming a Volume Group  
+--------------------------------- 
+  
+  
+vgrename /dev/vg02 /dev/my_volume_group 
+-------------------------------------------------------------- 
+  
+vgrename vg02 my_volume_group 
+  
+Moving a Volume Group to Another System 
+-------------------------------------------------------- 
+  
+You can move an entire LVM volume group to another system. It is recommended that you use the vgexport and vgimport commands 
+when you do this 
+  
+To move a volume group form one system to another, perform the following steps: 
+
+1. Make sure that no users are accessing files on the active volumes in the volume group, then unmount the logical volumes. 
+  
+  
+ 2. Use the -a n argument of the vgchange command to mark the volume group as inactive, 
+ which prevents any further activity on the volume group. 
+  
+ 3. Use the vgexport command to export the volume group. This prevents it from being accessed by the system from
+ which you are removing it. After you export the volume group, the physical volume will show up as being in an exported volume group when you execute the pvscan command, as in the following example.  
+  
+[root@tng3-1]# pvscan 
+ PV /dev/sda1 is in exported VG myvg [17.15 GB / 7.15 GB free] PV /dev/sdc1 is in exported VG myvg [17.15 GB / 15.15 GB free] PV /dev/sdd1 is in exported VG myvg [17.15 GB / 15.15 GB free] ... When the system is next shut down, you can unplug the disks that constitute the volume group and connect them to the new system.  
+  
+  
+  
+4. When the disks are plugged into the new system, use the vgimport command to import the volume group, 
+making it accessible to the new system. 
+  
+ 5. Activate the volume group with the -a y argument of the vgchange command. 
+  
+ 6. Mount the file system to make it available for use.  
+  
+  
+  
+  
+Creating Snapshot Volumes 
+-------------------------------------- 
+  
+Use the -s argument of the lvcreate command to create a snapshot volume. A snapshot volume is writeable 
+  
+lvcreate --size 100M --snapshot --name snap /dev/vg00/lvol1 
+  
+lvdisplay /dev/new_vg/lvol0 
+  
+lvs  
+  
+Merging Snapshot Volumes 
+------------------------------------- 
+  
+  
+Resizing Logical Volumes 
+  
+lvreduce -l -3 vg00/lvol1 
+  
+Changing the Parameters of a Logical Volume Group 
+------------------------------------------------------------------- 
+  
+lvchange -pr vg00/lvol1  
+  
+Renaming Logical Volumes 
+----------------------------------- 
+  
+lvrename /dev/vg02/lvold /dev/vg02/lvnew  
+  
+lvrename vg02 lvold lvnew  
+  
+Removing a Disk from a Logical Volume 
+--------------------------------------------------- 
+  
+This example shows how you can remove a disk from an existing logical volume, either to replace the disk or to use the disk as part of a different volume. In order to remove a disk, you must first move the extents on the LVM physical volume to a different disk or set of disks 
+  
+Moving Extents to Existing Physical Volumes 
+  
+pvs -o+pv_used 
+  
+We want to move the extents off of /dev/sdb1 so that we can remove it from the volume group.  
+  
+If there are enough free extents on the other physical volumes in the volume group, you can execute the pvmove command on the device you want to remove with no other options and the extents will be distributed to the other devices.  
+  
+pvmove /dev/sdb1 
+  
+After the pvmove command has finished executing, the distribution of extents is as follows:  
+  
+pvs -o+pv_used 
+  
+Use the vgreduce command to remove the physical volume /dev/sdb1 from the volume group 
+  
+vgreduce myvg /dev/sdb1  
+Removed "/dev/sdb1" from volume group "myvg" 
+  
+The disk can now be physically removed or allocated to other users.  
+  
+  
+  
+Moving Extents to a New Disk 
+-------------------------------------- 
+  
+pvs -o+pv_used 
+  
+Creating the New Physical Volume 
+  
+Create a new physical volume from /dev/sdd1 
+  
+pvcreate /dev/sdd1 
+  
+Adding the New Physical Volume to the Volume Group  
+  
+vgextend myvg /dev/sdd1 
+  
+pvs -o+pv_used  
+  
+Moving the Data 
+  
+Use the pvmove command to move the data from /dev/sdb1 to /dev/sdd1.  
+  
+pvmove /dev/sdb1 /dev/sdd1 
+  
+pvs -o+pv_used 
+  
+Removing the Old Physical Volume from the Volume Group 
+  
+vgreduce myvg /dev/sdb1 
+  
+Creating a Mirrored LVM Logical Volume in a Cluster 
+  
+NOTE: 
+  
+https://www.uvm.edu/~fcs/Doc/RedHat/Red_Hat_Enterprise_Linux-6-Logical_Volume_Manager_Administration-en-US.pdf 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
